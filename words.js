@@ -100,7 +100,7 @@ const words = [
             { rank: 97, de: "schön", en: "beautiful / nice", pos: "Adj" },
             { rank: 98, de: "schnell", en: "fast", pos: "Adj" },
             { rank: 99, de: "langsam", en: "slow", pos: "Adj" },
-            { rank: 100, de: "richtig", en: "correct", pos: "Adj" }{ rank: 100, de: "richtig", en: "correct", pos: "Adj" },
+            { rank: 100, de: "richtig", en: "correct", pos: "Adj" },
             { rank: 101, de: "großartig", en: "great", pos: "Adj" },
             { rank: 102, de: "wichtig", en: "important", pos: "Adj" },
             { rank: 103, de: "einfach", en: "simple / easy", pos: "Adj" },
@@ -200,12 +200,12 @@ const words = [
             { rank: 197, de: "der Sohn", en: "son", pos: "Noun" },
             { rank: 198, de: "die Tochter", en: "daughter", pos: "Noun" },
             { rank: 199, de: "die Liebe", en: "love", pos: "Noun" },
-            { rank: 200, de: "die Hoffnung", en: "hope", pos: "Noun" };]
+            { rank: 200, de: "die Hoffnung", en: "hope", pos: "Noun" },
 
             // Ranks 201-400
            // Ranks 201-400
-/*   { rank: 201, de: "der Name", en: "name", pos: "Noun" },
-  /  { rank: 202, de: "die Nummer", en: "number", pos: "Noun" },
+    { rank: 201, de: "der Name", en: "name", pos: "Noun" },
+    { rank: 202, de: "die Nummer", en: "number", pos: "Noun" },
     { rank: 203, de: "die Adresse", en: "address", pos: "Noun" },
     { rank: 204, de: "das Telefon", en: "telephone", pos: "Noun" },
     { rank: 205, de: "der Brief", en: "letter", pos: "Noun" },
