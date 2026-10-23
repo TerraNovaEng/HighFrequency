@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top 100 German Words | German Hub</title>
+    <link rel="icon" href="https://fav.farm/🇩🇪">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg: #f3f4f6;
+            --card-bg: #ffffff;
+            --text: #1f2937;
+            --border: #e5e7eb;
+            --tag-bg: #e0e7ff;
+            --tag-text: #3730a3;
+        }
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 2rem;
+            color: var(--primary);
+            text-align: center;
+        }
+        p.subtitle {
+            text-align: center;
+            color: #4b5563;
+            margin-bottom: 25px;
+        }
+        #search-box {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 25px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        #search-box:focus {
+            border-color: var(--primary);
+        }
+        .word-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 15px;
+        }
+        .word-card {
+            background: #fafafa;
+            border: 1px solid var(--border);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: transform 0.15s ease, border-color 0.15s ease;
+        }
+        .word-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            background: #ffffff;
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .rank {
+            font-size: 0.8rem;
+            color: #6b7280;
+            font-weight: 600;
+        }
+        .pos {
+            font-size: 0.75rem;
+            background: var(--tag-bg);
+            color: var(--tag-text);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        .german-word {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .translation {
+            font-size: 0.95rem;
+            color: #4b5563;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🇩🇪 Top 100 German Words</h1>
+        <p class="subtitle">High-frequency core vocabulary for rapid language acquisition.</p>
+        
+        <input type="text" id="search-box" placeholder="Search German word or English translation..." onkeyup="filterWords()">
+
+        <div class="word-grid" id="word-grid">
+            <!-- Dynamically populated via JS -->
+        </div>
+    </div>
+
+    <script>
+        const words = [
+            // Ranks 1-50
+            { rank: 1, de: "ich", en: "I", pos: "Pronoun" },
+            { rank: 2, de: "sein", en: "to be", pos: "Verb" },
+            { rank: 3, de: "das", en: "the (neuter)", pos: "Article" },
+            { rank: 4, de: "die", en: "the (fem/pl)", pos: "Article" },
+            { rank: 5, de: "du", en: "you", pos: "Pronoun" },
+            { rank: 6, de: "der", en: "the (masc)", pos: "Article" },
+            { rank: 7, de: "nicht", en: "not", pos: "Adverb" },
+            { rank: 8, de: "und", en: "and", pos: "Conj" },
+            { rank: 9, de: "es", en: "it", pos: "Pronoun" },
+            { rank: 10, de: "sie", en: "she / they", pos: "Pronoun" },
+            { rank: 11, de: "haben", en: "to have", pos: "Verb" },
+            { rank: 12, de: "was", en: "what", pos: "Pronoun" },
+            { rank: 13, de: "wir", en: "we", pos: "Pronoun" },
+            { rank: 14, de: "zu", en: "to / too", pos: "Prep" },
+            { rank: 15, de: "ein", en: "a / an", pos: "Article" },
+            { rank: 16, de: "er", en: "he", pos: "Pronoun" },
+            { rank: 17, de: "werden", en: "to become", pos: "Verb" },
+            { rank: 18, de: "in", en: "in", pos: "Prep" },
+            { rank: 19, de: "mit", en: "with", pos: "Prep" },
+            { rank: 20, de: "ja", en: "yes", pos: "Adverb" },
+            { rank: 21, de: "wie", en: "how", pos: "Adverb" },
+            { rank: 22, de: "den", en: "the (acc/dat)", pos: "Pronoun" },
+            { rank: 23, de: "mir", en: "me", pos: "Pronoun" },
+            { rank: 24, de: "können", en: "can", pos: "Verb" },
+            { rank: 25, de: "auf", en: "on", pos: "Prep" },
+            { rank: 26, de: "mich", en: "me", pos: "Pronoun" },
+            { rank: 27, de: "dass", en: "that", pos: "Conj" },
+            { rank: 28, de: "so", en: "so", pos: "Adverb" },
+            { rank: 29, de: "eine", en: "a (fem)", pos: "Article" },
+            { rank: 30, de: "aber", en: "but", pos: "Adverb" },
+            { rank: 31, de: "hier", en: "here", pos: "Adverb" },
+            { rank: 32, de: "für", en: "for", pos: "Prep" },
+            { rank: 33, de: "von", en: "from / of", pos: "Prep" },
+            { rank: 34, de: "wollen", en: "to want", pos: "Verb" },
+            { rank: 35, de: "dich", en: "you", pos: "Pronoun" },
+            { rank: 36, de: "noch", en: "still / yet", pos: "Adverb" },
+            { rank: 37, de: "an", en: "at / on", pos: "Prep" },
+            { rank: 38, de: "da", en: "there", pos: "Adverb" },
+            { rank: 39, de: "dir", en: "you", pos: "Pronoun" },
+            { rank: 40, de: "wenn", en: "if / when", pos: "Conj" },
+            { rank: 41, de: "gut", en: "good", pos: "Adj" },
+            { rank: 42, de: "man", en: "one / people", pos: "Pronoun" },
+            { rank: 43, de: "also", en: "also / so", pos: "Adverb" },
+            { rank: 44, de: "nur", en: "only", pos: "Adverb" },
+            { rank: 45, de: "machen", en: "to do / make", pos: "Verb" },
+            { rank: 46, de: "wissen", en: "to know", pos: "Verb" },
+            { rank: 47, de: "gehen", en: "to go", pos: "Verb" },
+            { rank: 48, de: "jetzt", en: "now", pos: "Adverb" },
+            { rank: 49, de: "mein", en: "my", pos: "Det" },
+            { rank: 50, de: "doch", en: "yet / after all", pos: "Adverb" },
+
+            // Ranks 51-100
+            { rank: 51, de: "sehen", en: "to see", pos: "Verb" },
+            { rank: 52, de: "sagen", en: "to say", pos: "Verb" },
+            { rank: 53, de: "kommen", en: "to come", pos: "Verb" },
+            { rank: 54, de: "machen", en: "to make / do", pos: "Verb" },
+            { rank: 55, de: "fahren", en: "to drive", pos: "Verb" },
+            { rank: 56, de: "lassen", en: "to let / leave", pos: "Verb" },
+            { rank: 57, de: "geben", en: "to give", pos: "Verb" },
+            { rank: 58, de: "finden", en: "to find", pos: "Verb" },
+            { rank: 59, de: "bleiben", en: "to stay", pos: "Verb" },
+            { rank: 60, de: "stehen", en: "to stand", pos: "Verb" },
+            { rank: 61, de: "halten", en: "to hold", pos: "Verb" },
+            { rank: 62, de: "liegen", en: "to lie", pos: "Verb" },
+            { rank: 63, de: "zeigen", en: "to show", pos: "Verb" },
+            { rank: 64, de: "führen", en: "to lead", pos: "Verb" },
+            { rank: 65, de: "sprechen", en: "to speak", pos: "Verb" },
+            { rank: 66, de: "bringen", en: "to bring", pos: "Verb" },
+            { rank: 67, de: "nehmen", en: "to take", pos: "Verb" },
+            { rank: 68, de: "tun", en: "to do", pos: "Verb" },
+            { rank: 69, de: "stellen", en: "to place", pos: "Verb" },
+            { rank: 70, de: "arbeiten", en: "to work", pos: "Verb" },
+            { rank: 71, de: "spielen", en: "to play", pos: "Verb" },
+            { rank: 72, de: "fragen", en: "to ask", pos: "Verb" },
+            { rank: 73, de: "helfen", en: "to help", pos: "Verb" },
+            { rank: 74, de: "lernen", en: "to learn", pos: "Verb" },
+            { rank: 75, de: "hören", en: "to hear", pos: "Verb" },
+            { rank: 76, de: "wohnen", en: "to live", pos: "Verb" },
+            { rank: 77, de: "glauben", en: "to believe", pos: "Verb" },
+            { rank: 78, de: "verstehen", en: "to understand", pos: "Verb" },
+            { rank: 79, de: "schreiben", en: "to write", pos: "Verb" },
+            { rank: 80, de: "lesen", en: "to read", pos: "Verb" },
+            { rank: 81, de: "heute", en: "today", pos: "Adverb" },
+            { rank: 82, de: "gestern", en: "yesterday", pos: "Adverb" },
+            { rank: 83, de: "morgen", en: "tomorrow", pos: "Adverb" },
+            { rank: 84, de: "immer", en: "always", pos: "Adverb" },
+            { rank: 85, de: "nie", en: "never", pos: "Adverb" },
+            { rank: 86, de: "oft", en: "often", pos: "Adverb" },
+            { rank: 87, de: "manchmal", en: "sometimes", pos: "Adverb" },
+            { rank: 88, de: "wieder", en: "again", pos: "Adverb" },
+            { rank: 89, de: "schon", en: "already", pos: "Adverb" },
+            { rank: 90, de: "schlecht", en: "bad", pos: "Adj" },
+            { rank: 91, de: "groß", en: "big", pos: "Adj" },
+            { rank: 92, de: "klein", en: "small", pos: "Adj" },
+            { rank: 93, de: "neu", en: "new", pos: "Adj" },
+            { rank: 94, de: "alt", en: "old", pos: "Adj" },
+            { rank: 95, de: "viel", en: "much / many", pos: "Adj" },
+            { rank: 96, de: "wenig", en: "little", pos: "Adj" },
+            { rank: 97, de: "schön", en: "beautiful / nice", pos: "Adj" },
+            { rank: 98, de: "schnell", en: "fast", pos: "Adj" },
+            { rank: 99, de: "langsam", en: "slow", pos: "Adj" },
+            { rank: 100, de: "richtig", en: "correct", pos: "Adj" }
+        ];
+
+        function renderWords(items) {
+            const grid = document.getElementById('word-grid');
+            grid.innerHTML = items.map(w => `
+                <div class="word-card">
+                    <div class="card-header">
+                        <span class="rank">#${w.rank}</span>
+                        <span class="pos">${w.pos}</span>
+                    </div>
+                    <div class="german-word">${w.de}</div>
+                    <div class="translation">${w.en}</div>
+                </div>
+            `).join('');
+        }
+
+        function filterWords() {
+            const query = document.getElementById('search-box').value.toLowerCase();
+            const filtered = words.filter(w => 
+                w.de.toLowerCase().includes(query) || 
+                w.en.toLowerCase().includes(query) ||
+                w.pos.toLowerCase().includes(query)
+            );
+            renderWords(filtered);
+        }
+
+        // Initial render
+        renderWords(words);
+    </script>
+</body>
+</html>
