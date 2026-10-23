@@ -9,7 +9,8 @@ const words = [
     { rank: 7, de: "nicht", en: "not", pos: "Adverb" },
     { rank: 8, de: "und", en: "and", pos: "Conj" },
     { rank: 9, de: "es", en: "it", pos: "Pronoun" },
-    { rank: 10, de: "sie", en: "she / they", pos: "Pronoun" },
+    { rank: 10, de: "sie", en: "she / they", pos: "Pronoun" }];
+/*
     { rank: 11, de: "haben", en: "to have", pos: "Verb" },
     { rank: 12, de: "was", en: "what", pos: "Pronoun" },
     { rank: 13, de: "wir", en: "we", pos: "Pronoun" },
