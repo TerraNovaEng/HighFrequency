@@ -72,15 +72,11 @@
         <div class="word-grid" id="word-grid"></div>
     </div>
 
+   </script> <!-- Close the inline script -->
+
+    <script src="./words.js?v=2"></script> <!-- Load your external file -->
+
     <script>
-        // Test array built right in
-        const words = [
-            { rank: 1, de: "ich", en: "I", pos: "Pronoun" },
-            { rank: 2, de: "sein", en: "to be", pos: "Verb" },
-            { rank: 3, de: "das", en: "the (neuter)", pos: "Article" },
-            { rank: 4, de: "die", en: "the (fem/pl)", pos: "Article" },
-            { rank: 5, de: "du", en: "you", pos: "Pronoun" }
-        ];
 
         function renderWords(items) {
             const grid = document.getElementById('word-grid');
