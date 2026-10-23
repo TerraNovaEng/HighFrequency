@@ -49,8 +49,8 @@
             { rank: 47, de: "gehen", en: "to go", pos: "Verb" },
             { rank: 48, de: "jetzt", en: "now", pos: "Adverb" },
             { rank: 49, de: "mein", en: "my", pos: "Det" },
-            { rank: 50, de: "doch", en: "yet / after all", pos: "Adverb" },
-
+            { rank: 50, de: "doch", en: "yet / after all", pos: "Adverb" }];
+/*
             // Ranks 51-100
             { rank: 51, de: "sehen", en: "to see", pos: "Verb" },
             { rank: 52, de: "sagen", en: "to say", pos: "Verb" },
