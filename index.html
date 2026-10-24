@@ -27,13 +27,40 @@
         }
         .container {
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             background: var(--card-bg);
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
         }
         h1 { margin-top: 0; color: var(--primary); text-align: center; }
+        
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: 2px solid var(--primary);
+            background: transparent;
+            color: var(--primary);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Dictionary Styles */
         #search-box {
             width: 100%;
             padding: 12px 16px;
@@ -63,21 +90,146 @@
         .pos { font-size: 0.75rem; background: var(--tag-bg); color: var(--tag-text); padding: 2px 8px; border-radius: 12px; }
         .german-word { font-size: 1.25rem; font-weight: 700; color: var(--primary); }
         .translation { font-size: 0.95rem; color: #4b5563; }
+
+        /* Memory Game Styles */
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+        }
+        .memory-card {
+            background: #fafafa;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.4s;
+            user-select: none;
+        }
+        .memory-card.flipped {
+            background: #ffffff;
+            border-color: var(--primary);
+        }
+        .memory-card.matched {
+            background: #ecfdf5;
+            border-color: #10b981;
+            opacity: 0.8;
+            cursor: default;
+        }
+        .memory-card .card-front, .memory-card .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .memory-card .card-back {
+            background: var(--primary);
+            color: white;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .memory-card .card-front {
+            transform: rotateY(180px);
+        }
+        .memory-card.flipped .card-back {
+            transform: rotateY(180deg);
+        }
+        .memory-card.flipped .card-front {
+            transform: rotateY(0deg);
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-primary:hover { opacity: 0.9; }
+        .game-stats {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #4b5563;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🇩🇪 Top 1000 German Words</h1>
-        <input type="text" id="search-box" placeholder="Search word..." onkeyup="filterWords()">
-        <div class="word-grid" id="word-grid"></div>
+        
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('dictionary')">📖 Dictionary</button>
+            <button class="tab-btn" onclick="switchTab('game')">🎮 Memory Game</button>
+        </div>
+
+        <!-- Dictionary Tab -->
+        <div id="dictionary-tab" class="tab-content active">
+            <input type="text" id="search-box" placeholder="Search word..." onkeyup="filterWords()">
+            <div class="word-grid" id="word-grid"></div>
+        </div>
+
+        <!-- Memory Game Tab -->
+        <div id="game-tab" class="tab-content">
+            <div class="game-controls">
+                <div>
+                    <label for="pair-count" style="font-weight: 600; margin-right: 8px;">Pairs:</label>
+                    <select id="pair-count" onchange="initMemoryGame()" style="padding: 8px; border-radius: 6px; border: 2px solid var(--border);">
+                        <option value="6">6 Pairs (12 cards)</option>
+                        <option value="8" selected>8 Pairs (16 cards)</option>
+                        <option value="10">10 Pairs (20 cards)</option>
+                        <option value="12">12 Pairs (24 cards)</option>
+                    </select>
+                </div>
+                <div class="game-stats">Matches: <span id="match-count">0</span> / <span id="total-pairs">8</span></div>
+                <button class="btn-primary" onclick="initMemoryGame()">🔄 Restart Game</button>
+            </div>
+            <div class="game-grid" id="game-grid"></div>
+        </div>
     </div>
 
-   </script> <!-- Close the inline script -->
-
-    <script src="./words.js?v=2"></script> <!-- Load your external file -->
+    <script src="./words.js?v=2"></script>
 
     <script>
+        // Tab Switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            if (tabName === 'dictionary') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('dictionary-tab').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('game-tab').classList.add('active');
+                if (gameCards.length === 0) initMemoryGame();
+            }
+        }
 
+        // Dictionary Functions
         function renderWords(items) {
             const grid = document.getElementById('word-grid');
             grid.innerHTML = items.map(w => `
@@ -102,6 +254,114 @@
         }
 
         renderWords(words);
+
+        // Memory Game Logic
+        let gameCards = [];
+        let firstSelection = null;
+        let secondSelection = null;
+        let lockBoard = false;
+        let matchesFound = 0;
+
+        function initMemoryGame() {
+            const count = parseInt(document.getElementById('pair-count').value);
+            document.getElementById('total-pairs').textContent = count;
+            document.getElementById('match-count').textContent = '0';
+            matchesFound = 0;
+            firstSelection = null;
+            secondSelection = null;
+            lockBoard = false;
+
+            // Pick random words from the dictionary
+            const shuffledWords = [...words].sort(() => 0.5 - Math.random()).slice(0, count);
+            
+            gameCards = [];
+            shuffledWords.forEach((w, index) => {
+                // Card for German word
+                gameCards.push({
+                    id: index,
+                    text: w.de,
+                    type: 'de',
+                    rank: w.rank,
+                    pos: w.pos
+                });
+                // Card for English translation
+                gameCards.push({
+                    id: index,
+                    text: w.en,
+                    type: 'en',
+                    rank: w.rank,
+                    pos: w.pos
+                });
+            });
+
+            // Shuffle game cards
+            gameCards.sort(() => 0.5 - Math.random());
+            renderMemoryBoard();
+        }
+
+        function renderMemoryBoard() {
+            const grid = document.getElementById('game-grid');
+            grid.innerHTML = gameCards.map((card, idx) => `
+                <div class="memory-card" data-index="${idx}" onclick="flipCard(${idx})">
+                    <div class="card-back">🇩🇪 ?</div>
+                    <div class="card-front">
+                        <div class="card-header" style="width:100%;">
+                            <span class="rank">#${card.rank}</span>
+                            <span class="pos">${card.pos}</span>
+                        </div>
+                        <div class="${card.type === 'de' ? 'german-word' : 'translation'}" style="margin: auto 0;">${card.text}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function flipCard(idx) {
+            if (lockBoard) return;
+            const clickedElement = document.querySelector(`[data-index="${idx}"]`);
+            
+            if (clickedElement.classList.contains('flipped') || clickedElement.classList.contains('matched')) return;
+
+            clickedElement.classList.add('flipped');
+
+            if (!firstSelection) {
+                firstSelection = { index: idx, card: gameCards[idx], element: clickedElement };
+                return;
+            }
+
+            secondSelection = { index: idx, card: gameCards[idx], element: clickedElement };
+            checkMatch();
+        }
+
+        function checkMatch() {
+            const isMatch = firstSelection.card.id === secondSelection.card.id && 
+                            firstSelection.card.type !== secondSelection.card.type;
+
+            if (isMatch) {
+                firstSelection.element.classList.add('matched');
+                secondSelection.element.classList.add('matched');
+                matchesFound++;
+                document.getElementById('match-count').textContent = matchesFound;
+                
+                const targetPairs = parseInt(document.getElementById('pair-count').value);
+                if (matchesFound === targetPairs) {
+                    setTimeout(() => alert('🎉 Congratulations! You matched all the word pairs!'), 300);
+                }
+                resetTurn();
+            } else {
+                lockBoard = true;
+                setTimeout(() => {
+                    firstSelection.element.classList.remove('flipped');
+                    secondSelection.element.classList.remove('flipped');
+                    resetTurn();
+                }, 1000);
+            }
+        }
+
+        function resetTurn() {
+            firstSelection = null;
+            secondSelection = null;
+            lockBoard = false;
+        }
     </script>
 </body>
 </html>
