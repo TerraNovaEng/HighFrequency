@@ -317,9 +317,13 @@
         <div id="missions-tab" class="tab-content">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h3 style="margin:0; color:var(--text);">Action-Oriented Mission Tracker</h3>
-                <button class="btn-primary" onclick="loadNewMission()">New Mission 🔄</button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-primary" onclick="checkMissionAnswers()">Check Mission ✔️</button>
+                    <button class="btn-primary" onclick="loadNewMission()">New Mission 🔄</button>
+                </div>
             </div>
             <div id="mission-container"></div>
+            <div id="mission-feedback" class="feedback-box"></div>
         </div>
     </div>
 
@@ -470,7 +474,7 @@
             lockBoard = false;
         }
 
-        // 1. Real-World Roleplay (Task Simulator)
+        // 1. Real-World Roleplay (Task Simulator - Expanded)
         const roleplayScenarios = [
             {
                 title: "Bakery in Munich (Bäckerei)",
@@ -497,6 +501,33 @@
                     { text: "Entschuldigung, wo ist das Gleis nach Berlin?", correct: true, feedback: "Sehr gut! Polite opening ('Entschuldigung') and clear question." },
                     { text: "Ich habe keinen Hunger.", correct: false, feedback: "That means 'I am not hungry'." },
                     { text: "Guten Morgen, ich heiße Tisch.", correct: false, feedback: "That means 'Good morning, my name is table'." }
+                ]
+            },
+            {
+                title: "At a Restaurant (Restaurant)",
+                desc: "The waiter walks up to your table and hands you the menu: 'Haben Sie schon gewählt?'",
+                options: [
+                    { text: "Ja, ich hätte gerne das Schnitzel, bitte.", correct: true, feedback: "Sehr gut! Natural way to order food at a restaurant." },
+                    { text: "Ich schlafe hier.", correct: false, feedback: "That means 'I sleep here'." },
+                    { text: "Wo ist mein Auto?", correct: false, feedback: "That asks where your car is!" }
+                ]
+            },
+            {
+                title: "Supermarket Checkout (Supermarkt)",
+                desc: "The cashier scans your items and says: 'Das macht 14 Euro 50, bitte.'",
+                options: [
+                    { text: "Mit Karte, bitte.", correct: true, feedback: "Perfekt! Standard way to say 'By card, please'." },
+                    { text: "Guten Morgen, ich bin ein Hund.", correct: false, feedback: "That means 'Good morning, I am a dog'." },
+                    { text: "Auf Wiedersehen!", correct: false, feedback: "Too early to say goodbye before paying!" }
+                ]
+            },
+            {
+                title: "Clothing Store (Kleidungsgeschäft)",
+                desc: "A sales assistant approaches you: 'Kann ich Ihnen helfen?'",
+                options: [
+                    { text: "Ja, ich suche eine Jacke in Größe L.", correct: true, feedback: "Ausgezeichnet! Clear and helpful communication." },
+                    { text: "Nein, ich mag den Regen.", correct: false, feedback: "A bit off-topic!" },
+                    { text: "Wie spät ist es?", correct: false, feedback: "That asks for the time instead of stating what you are looking for." }
                 ]
             }
         ];
@@ -538,7 +569,7 @@
             feedbackBox.className = `feedback-box show ${selectedOpt.correct ? 'success' : 'error'}`;
         }
 
-        // 2. Dialogue Practice
+        // 2. Dialogue Practice (Expanded)
         const dialogueScenarios = [
             {
                 title: "Meeting a Neighbor",
@@ -553,6 +584,20 @@
                     { speaker: "A", text: "Ich hätte gerne einen <input type='text' class='dialogue-input' data-answer='kaffee'>, bitte." },
                     { speaker: "B", text: "Mit Milch oder <input type='text' class='dialogue-input' data-answer='zucker'>?" }
                 ]
+            },
+            {
+                title: "Buying a Ticket",
+                lines: [
+                    { speaker: "A", text: "Guten Tag, ich möchte eine <input type='text' class='dialogue-input' data-answer='fahrkarte'> kaufen." },
+                    { speaker: "B", text: "Einfach oder <input type='text' class='dialogue-input' data-answer='hin und zurück'>? (oder 'hin')" }
+                ]
+            },
+            {
+                title: "Asking the Time",
+                lines: [
+                    { speaker: "A", text: "Entschuldigung, wie viel <input type='text' class='dialogue-input' data-answer='uhr'> ist es?" },
+                    { speaker: "B", text: "Es ist genau <input type='text' class='dialogue-input' data-answer='zwölf'> Uhr." }
+                ]
             }
         ];
 
@@ -564,7 +609,7 @@
             container.innerHTML = `
                 <div class="clt-card">
                     <div class="scenario-title">💬 ${currentDialogue.title}</div>
-                    <div class="scenario-desc">Fill in the blanks with appropriate German words (e.g. wohne, name, kaffee, zucker):</div>
+                    <div class="scenario-desc">Fill in the missing words (e.g., wohne, name, kaffee, zucker, fahrkarte, uhr...):</div>
                     ${currentDialogue.lines.map(line => `
                         <div class="dialogue-line"><strong>Speaker ${line.speaker}:</strong> ${line.text}</div>
                     `).join('')}
@@ -595,7 +640,7 @@
             feedbackBox.textContent = allCorrect ? '🎉 Fantastic! All dialogue blanks are correct.' : '⚠️ Some answers need adjustment. Check highlighted fields.';
         }
 
-        // 3. Weekly Missions
+        // 3. Weekly Missions (Expanded)
         const missions = [
             {
                 title: "Mission: Plan a Weekend Trip",
@@ -611,6 +656,14 @@
                     { task: "1. Say hello and give your name ('Hallo, ich heiße...')", hint: "Keywords: Hallo, heiße" },
                     { task: "2. Mention where you live ('Ich wohne in...')", hint: "Keywords: wohne" },
                     { task: "3. Say nice to meet you ('Freut mich')", hint: "Keywords: Freut mich" }
+                ]
+            },
+            {
+                title: "Mission: Grocery Shopping",
+                steps: [
+                    { task: "1. Greet and ask for help ('Guten Tag, ich suche...')", hint: "Keywords: Guten Tag, suche" },
+                    { task: "2. Ask how much something costs ('Was kostet das?')", hint: "Keywords: Was kostet" },
+                    { task: "3. Say thank you and goodbye ('Danke, auf Wiedersehen')", hint: "Keywords: Danke, Wiedersehen" }
                 ]
             }
         ];
@@ -629,12 +682,33 @@
                             <div style="background: white; padding: 12px; border: 1px solid var(--border); border-radius: 6px;">
                                 <div style="font-weight: 600; margin-bottom: 6px;">${step.task}</div>
                                 <div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 8px;">💡 Hint: ${step.hint}</div>
-                                <input type="text" placeholder="Type your response in German..." style="width: 100%; padding: 8px; box-sizing: border-box; border: 2px solid var(--border); border-radius: 6px; outline: none;">
+                                <input type="text" class="mission-input" placeholder="Type your response in German..." style="width: 100%; padding: 8px; box-sizing: border-box; border: 2px solid var(--border); border-radius: 6px; outline: none;">
                             </div>
                         `).join('')}
                     </div>
                 </div>
             `;
+            document.getElementById('mission-feedback').className = 'feedback-box';
+        }
+
+        function checkMissionAnswers() {
+            const inputs = document.querySelectorAll('.mission-input');
+            let allFilled = true;
+
+            inputs.forEach(input => {
+                if (input.value.trim().length > 0) {
+                    input.style.borderColor = 'var(--success-border)';
+                    input.style.backgroundColor = 'var(--success-bg)';
+                } else {
+                    input.style.borderColor = 'var(--error-border)';
+                    input.style.backgroundColor = 'var(--error-bg)';
+                    allFilled = false;
+                }
+            });
+
+            const feedbackBox = document.getElementById('mission-feedback');
+            feedbackBox.className = `feedback-box show ${allFilled ? 'success' : 'error'}`;
+            feedbackBox.textContent = allFilled ? '🌟 Excellent work! All mission steps completed.' : '⚠️ Please fill in all step responses before checking.';
         }
     </script>
 </body>
