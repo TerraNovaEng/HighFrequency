@@ -13,6 +13,10 @@
             --border: #e5e7eb;
             --tag-bg: #e0e7ff;
             --tag-text: #3730a3;
+            --success-bg: #ecfdf5;
+            --success-border: #10b981;
+            --error-bg: #fef2f2;
+            --error-border: #ef4444;
         }
         body {
             font-family: system-ui, -apple-system, sans-serif;
@@ -39,12 +43,13 @@
         .nav-tabs {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 10px;
             margin-bottom: 25px;
+            flex-wrap: wrap;
         }
         .tab-btn {
-            padding: 10px 20px;
-            font-size: 1rem;
+            padding: 8px 14px;
+            font-size: 0.9rem;
             font-weight: 600;
             border: 2px solid var(--primary);
             background: transparent;
@@ -124,8 +129,8 @@
             border-color: var(--primary);
         }
         .memory-card.matched {
-            background: #ecfdf5;
-            border-color: #10b981;
+            background: var(--success-bg);
+            border-color: var(--success-border);
             opacity: 0.8;
             cursor: default;
         }
@@ -158,6 +163,67 @@
         .memory-card.flipped .card-front {
             transform: rotateY(0deg);
         }
+
+        /* CLT Module Common Styles */
+        .clt-card {
+            background: #fafafa;
+            border: 1px solid var(--border);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .scenario-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .scenario-desc {
+            font-size: 0.95rem;
+            color: #4b5563;
+            margin-bottom: 15px;
+        }
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option-btn {
+            background: white;
+            border: 2px solid var(--border);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 1rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-btn:hover {
+            border-color: var(--primary);
+            background: #f8fafc;
+        }
+        .option-btn.correct {
+            background: var(--success-bg);
+            border-color: var(--success-border);
+            color: #065f46;
+            font-weight: 600;
+        }
+        .option-btn.incorrect {
+            background: var(--error-bg);
+            border-color: var(--error-border);
+            color: #991b1b;
+        }
+        .feedback-box {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            display: none;
+        }
+        .feedback-box.show { display: block; }
+        .feedback-box.success { background: var(--success-bg); color: #065f46; border: 1px solid var(--success-border); }
+        .feedback-box.error { background: var(--error-bg); color: #991b1b; border: 1px solid var(--error-border); }
+
         .btn-primary {
             background: var(--primary);
             color: white;
@@ -174,6 +240,21 @@
             font-weight: 600;
             color: #4b5563;
         }
+        
+        .dialogue-line {
+            margin-bottom: 12px;
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+        .dialogue-input {
+            padding: 6px 10px;
+            font-size: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            width: 140px;
+            outline: none;
+        }
+        .dialogue-input:focus { border-color: var(--primary); }
     </style>
 </head>
 <body>
@@ -184,6 +265,9 @@
         <div class="nav-tabs">
             <button class="tab-btn active" onclick="switchTab('dictionary')">📖 Dictionary</button>
             <button class="tab-btn" onclick="switchTab('game')">🎮 Memory Game</button>
+            <button class="tab-btn" onclick="switchTab('roleplay')">🎭 Roleplay Tasks</button>
+            <button class="tab-btn" onclick="switchTab('dialogue')">💬 Dialogue Practice</button>
+            <button class="tab-btn" onclick="switchTab('missions')">🎯 Weekly Missions</button>
         </div>
 
         <!-- Dictionary Tab -->
@@ -209,6 +293,34 @@
             </div>
             <div class="game-grid" id="game-grid"></div>
         </div>
+
+        <!-- Roleplay Tasks Tab -->
+        <div id="roleplay-tab" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin:0; color:var(--text);">Real-World Task Simulator</h3>
+                <button class="btn-primary" onclick="loadNewRoleplay()">Next Scenario ➡️</button>
+            </div>
+            <div id="roleplay-container"></div>
+        </div>
+
+        <!-- Dialogue Practice Tab -->
+        <div id="dialogue-tab" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin:0; color:var(--text);">Contextual Dialogue Completion</h3>
+                <button class="btn-primary" onclick="checkDialogueAnswers()">Check Answers ✔️</button>
+            </div>
+            <div id="dialogue-container"></div>
+            <div id="dialogue-feedback" class="feedback-box"></div>
+        </div>
+
+        <!-- Weekly Missions Tab -->
+        <div id="missions-tab" class="tab-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="margin:0; color:var(--text);">Action-Oriented Mission Tracker</h3>
+                <button class="btn-primary" onclick="loadNewMission()">New Mission 🔄</button>
+            </div>
+            <div id="mission-container"></div>
+        </div>
     </div>
 
     <script src="./words.js?v=2"></script>
@@ -222,10 +334,22 @@
             if (tabName === 'dictionary') {
                 document.querySelectorAll('.tab-btn')[0].classList.add('active');
                 document.getElementById('dictionary-tab').classList.add('active');
-            } else {
+            } else if (tabName === 'game') {
                 document.querySelectorAll('.tab-btn')[1].classList.add('active');
                 document.getElementById('game-tab').classList.add('active');
                 if (gameCards.length === 0) initMemoryGame();
+            } else if (tabName === 'roleplay') {
+                document.querySelectorAll('.tab-btn')[2].classList.add('active');
+                document.getElementById('roleplay-tab').classList.add('active');
+                if (!currentRoleplay) loadNewRoleplay();
+            } else if (tabName === 'dialogue') {
+                document.querySelectorAll('.tab-btn')[3].classList.add('active');
+                document.getElementById('dialogue-tab').classList.add('active');
+                if (!currentDialogue) loadNewDialogue();
+            } else if (tabName === 'missions') {
+                document.querySelectorAll('.tab-btn')[4].classList.add('active');
+                document.getElementById('missions-tab').classList.add('active');
+                if (!currentMission) loadNewMission();
             }
         }
 
@@ -271,30 +395,14 @@
             secondSelection = null;
             lockBoard = false;
 
-            // Pick random words from the dictionary
             const shuffledWords = [...words].sort(() => 0.5 - Math.random()).slice(0, count);
             
             gameCards = [];
             shuffledWords.forEach((w, index) => {
-                // Card for German word
-                gameCards.push({
-                    id: index,
-                    text: w.de,
-                    type: 'de',
-                    rank: w.rank,
-                    pos: w.pos
-                });
-                // Card for English translation
-                gameCards.push({
-                    id: index,
-                    text: w.en,
-                    type: 'en',
-                    rank: w.rank,
-                    pos: w.pos
-                });
+                gameCards.push({ id: index, text: w.de, type: 'de', rank: w.rank, pos: w.pos });
+                gameCards.push({ id: index, text: w.en, type: 'en', rank: w.rank, pos: w.pos });
             });
 
-            // Shuffle game cards
             gameCards.sort(() => 0.5 - Math.random());
             renderMemoryBoard();
         }
@@ -318,7 +426,6 @@
         function flipCard(idx) {
             if (lockBoard) return;
             const clickedElement = document.querySelector(`[data-index="${idx}"]`);
-            
             if (clickedElement.classList.contains('flipped') || clickedElement.classList.contains('matched')) return;
 
             clickedElement.classList.add('flipped');
@@ -361,6 +468,173 @@
             firstSelection = null;
             secondSelection = null;
             lockBoard = false;
+        }
+
+        // 1. Real-World Roleplay (Task Simulator)
+        const roleplayScenarios = [
+            {
+                title: "Bakery in Munich (Bäckerei)",
+                desc: "You step up to the counter in a busy bakery. The baker greets you: 'Guten Tag! Was darf es sein?'",
+                options: [
+                    { text: "Ich möchte bitte ein Brötchen und einen Kaffee.", correct: true, feedback: "Perfekt! Polite, clear, and task-oriented." },
+                    { text: "Ich bin das Brötchen.", correct: false, feedback: "Oops! That means 'I am the roll'." },
+                    { text: "Wo ist der Bahnhof?", correct: false, feedback: "That asks for the train station instead of ordering food." }
+                ]
+            },
+            {
+                title: "Hotel Check-in",
+                desc: "You arrive at your hotel reception desk. The clerk asks: 'Guten Abend, haben Sie eine Reservierung?'",
+                options: [
+                    { text: "Ja, ich habe ein Zimmer reserviert. Mein Name ist...", correct: true, feedback: "Ausgezeichnet! Exactly what a receptionist needs to hear." },
+                    { text: "Nein, ich mag Katzen.", correct: false, feedback: "A bit random for a hotel check-in!" },
+                    { text: "Wie viel Uhr ist es?", correct: false, feedback: "That asks for the time rather than confirming your reservation." }
+                ]
+            },
+            {
+                title: "Asking for Directions at the Train Station",
+                desc: "You need to find the platform for Berlin. You turn to a passerby:",
+                options: [
+                    { text: "Entschuldigung, wo ist das Gleis nach Berlin?", correct: true, feedback: "Sehr gut! Polite opening ('Entschuldigung') and clear question." },
+                    { text: "Ich habe keinen Hunger.", correct: false, feedback: "That means 'I am not hungry'." },
+                    { text: "Guten Morgen, ich heiße Tisch.", correct: false, feedback: "That means 'Good morning, my name is table'." }
+                ]
+            }
+        ];
+
+        let currentRoleplay = null;
+
+        function loadNewRoleplay() {
+            currentRoleplay = roleplayScenarios[Math.floor(Math.random() * roleplayScenarios.length)];
+            const container = document.getElementById('roleplay-container');
+            container.innerHTML = `
+                <div class="clt-card">
+                    <div class="scenario-title">📍 ${currentRoleplay.title}</div>
+                    <div class="scenario-desc">${currentRoleplay.desc}</div>
+                    <div class="options-grid">
+                        ${currentRoleplay.options.map((opt, i) => `
+                            <button class="option-btn" onclick="selectRoleplayOption(${i})">${opt.text}</button>
+                        `).join('')}
+                    </div>
+                    <div id="roleplay-feedback" class="feedback-box"></div>
+                </div>
+            `;
+        }
+
+        function selectRoleplayOption(index) {
+            const buttons = document.querySelectorAll('#roleplay-container .option-btn');
+            const feedbackBox = document.getElementById('roleplay-feedback');
+            const selectedOpt = currentRoleplay.options[index];
+
+            buttons.forEach((btn, i) => {
+                btn.disabled = true;
+                if (currentRoleplay.options[i].correct) {
+                    btn.classList.add('correct');
+                } else if (i === index) {
+                    btn.classList.add('incorrect');
+                }
+            });
+
+            feedbackBox.textContent = selectedOpt.feedback;
+            feedbackBox.className = `feedback-box show ${selectedOpt.correct ? 'success' : 'error'}`;
+        }
+
+        // 2. Dialogue Practice
+        const dialogueScenarios = [
+            {
+                title: "Meeting a Neighbor",
+                lines: [
+                    { speaker: "A", text: "Guten Tag! Ich <input type='text' class='dialogue-input' data-answer='wohne'> hier neu." },
+                    { speaker: "B", text: "Herzlich willkommen! Wie ist Ihr <input type='text' class='dialogue-input' data-answer='name'>?" }
+                ]
+            },
+            {
+                title: "Ordering at a Café",
+                lines: [
+                    { speaker: "A", text: "Ich hätte gerne einen <input type='text' class='dialogue-input' data-answer='kaffee'>, bitte." },
+                    { speaker: "B", text: "Mit Milch oder <input type='text' class='dialogue-input' data-answer='zucker'>?" }
+                ]
+            }
+        ];
+
+        let currentDialogue = null;
+
+        function loadNewDialogue() {
+            currentDialogue = dialogueScenarios[Math.floor(Math.random() * dialogueScenarios.length)];
+            const container = document.getElementById('dialogue-container');
+            container.innerHTML = `
+                <div class="clt-card">
+                    <div class="scenario-title">💬 ${currentDialogue.title}</div>
+                    <div class="scenario-desc">Fill in the blanks with appropriate German words (e.g. wohne, name, kaffee, zucker):</div>
+                    ${currentDialogue.lines.map(line => `
+                        <div class="dialogue-line"><strong>Speaker ${line.speaker}:</strong> ${line.text}</div>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('dialogue-feedback').className = 'feedback-box';
+        }
+
+        function checkDialogueAnswers() {
+            const inputs = document.querySelectorAll('.dialogue-input');
+            let allCorrect = true;
+
+            inputs.forEach(input => {
+                const userVal = input.value.trim().toLowerCase();
+                const expected = input.getAttribute('data-answer');
+                if (userVal === expected) {
+                    input.style.borderColor = 'var(--success-border)';
+                    input.style.backgroundColor = 'var(--success-bg)';
+                } else {
+                    input.style.borderColor = 'var(--error-border)';
+                    input.style.backgroundColor = 'var(--error-bg)';
+                    allCorrect = false;
+                }
+            });
+
+            const feedbackBox = document.getElementById('dialogue-feedback');
+            feedbackBox.className = `feedback-box show ${allCorrect ? 'success' : 'error'}`;
+            feedbackBox.textContent = allCorrect ? '🎉 Fantastic! All dialogue blanks are correct.' : '⚠️ Some answers need adjustment. Check highlighted fields.';
+        }
+
+        // 3. Weekly Missions
+        const missions = [
+            {
+                title: "Mission: Plan a Weekend Trip",
+                steps: [
+                    { task: "1. State where you want to go (e.g., 'Ich reise nach München')", hint: "Use 'ich reise nach...'" },
+                    { task: "2. Ask about the train departure time ('Wann fährt der Zug?')", hint: "Keywords: Wann, Zug" },
+                    { task: "3. Buy a ticket ('Eine Fahrkarte nach Berlin, bitte')", hint: "Keywords: Fahrkarte, bitte" }
+                ]
+            },
+            {
+                title: "Mission: Introduce Yourself at a Meetup",
+                steps: [
+                    { task: "1. Say hello and give your name ('Hallo, ich heiße...')", hint: "Keywords: Hallo, heiße" },
+                    { task: "2. Mention where you live ('Ich wohne in...')", hint: "Keywords: wohne" },
+                    { task: "3. Say nice to meet you ('Freut mich')", hint: "Keywords: Freut mich" }
+                ]
+            }
+        ];
+
+        let currentMission = null;
+
+        function loadNewMission() {
+            currentMission = missions[Math.floor(Math.random() * missions.length)];
+            const container = document.getElementById('mission-container');
+            container.innerHTML = `
+                <div class="clt-card">
+                    <div class="scenario-title">🎯 ${currentMission.title}</div>
+                    <div class="scenario-desc">Complete your real-world objective step by step:</div>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        ${currentMission.steps.map((step, i) => `
+                            <div style="background: white; padding: 12px; border: 1px solid var(--border); border-radius: 6px;">
+                                <div style="font-weight: 600; margin-bottom: 6px;">${step.task}</div>
+                                <div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 8px;">💡 Hint: ${step.hint}</div>
+                                <input type="text" placeholder="Type your response in German..." style="width: 100%; padding: 8px; box-sizing: border-box; border: 2px solid var(--border); border-radius: 6px; outline: none;">
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
         }
     </script>
 </body>
