@@ -85,7 +85,7 @@
             flex-direction: column;
             gap: 6px;
         }
-        .card-header { display: flex; justify-content: space-between; align-items: center; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .rank { font-size: 0.8rem; color: #6b7280; font-weight: 600; }
         .pos { font-size: 0.75rem; background: var(--tag-bg); color: var(--tag-text); padding: 2px 8px; border-radius: 12px; }
         .german-word { font-size: 1.25rem; font-weight: 700; color: var(--primary); }
@@ -150,7 +150,7 @@
             font-size: 1.1rem;
         }
         .memory-card .card-front {
-            transform: rotateY(180px);
+            transform: rotateY(180deg);
         }
         .memory-card.flipped .card-back {
             transform: rotateY(180deg);
@@ -305,7 +305,7 @@
                 <div class="memory-card" data-index="${idx}" onclick="flipCard(${idx})">
                     <div class="card-back">🇩🇪 ?</div>
                     <div class="card-front">
-                        <div class="card-header" style="width:100%;">
+                        <div class="card-header">
                             <span class="rank">#${card.rank}</span>
                             <span class="pos">${card.pos}</span>
                         </div>
